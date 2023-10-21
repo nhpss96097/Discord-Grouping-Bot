@@ -102,15 +102,18 @@ module.exports = {
         // console.log(confirmation.customId);
 
         // 檢查是否在隊伍中
-        async function checkUserInTeam(user, i) {
+        async function checkUserInTeam(user, i, position) {
           console.log("checkStart");
           console.log(inTeamMember);
 
-          const isUserInTeam = inTeamMember.includes(user);
-          if (isUserInTeam) {
+          const isUserInTeam = inTeamMember.includes(user); //使用者
+          const userPosition = memberPosition.includes(position); // 使用者的職位
+          if (isUserInTeam && userPosition) {
             const index = inTeamMember.indexOf(user);
-            if (index !== -1) {
+            const positionIndex = memberPosition.indexOf(position);
+            if (index !== -1 || positionIndex !== -1) {
               inTeamMember.splice(index, 1);
+              memberPosition.splice(positionIndex, 1);
               await i.reply({
                 ephemeral: true,
                 content: `以退出${teamName}的隊伍`,
@@ -141,7 +144,7 @@ module.exports = {
         }
 
         confirmation.on("collect", async (i) => {
-          const userInTeam = await checkUserInTeam(userName, i);
+          const userInTeam = await checkUserInTeam(userName, i, i.customId);
 
           if (!userInTeam) {
             if (checkTeamMember(i)) {

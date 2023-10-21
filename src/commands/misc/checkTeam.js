@@ -21,11 +21,17 @@ module.exports = {
     const teamMembers = teams[teamName];
 
     if (teamMembers) {
-      await interaction.reply({
-        content: `隊伍名稱: ${teamName}\n隊伍成員:\n **${teamMembers.join(
-          "\n"
-        )}** : **${memberPosition}**`,
-      });
+      if (teamMembers.length === 0) {
+        await interaction.reply({
+          content: `隊伍名稱: ${teamName}\n隊伍成員: 目前沒有隊伍成員`,
+        });
+      } else if (teamMembers !== 0) {
+        await interaction.reply({
+          content: `隊伍名稱: ${teamName}\n隊伍成員:\n **${teamMembers.join(
+            "\n"
+          )}** : **${memberPosition}**`,
+        });
+      }
     } else {
       await interaction.reply({
         content: `找不到名稱為${teamName}的隊伍`,

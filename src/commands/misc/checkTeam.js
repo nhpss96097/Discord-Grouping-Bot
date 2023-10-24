@@ -1,6 +1,6 @@
 const { ApplicationCommandOptionType } = require("discord.js");
 
-const { teams, memberPosition } = require("./team");
+const { teams, memberPosition, memberNumber } = require("./team");
 
 module.exports = {
   name: "check-team",
@@ -29,7 +29,7 @@ module.exports = {
         await interaction.reply({
           content: `隊伍名稱: ${teamName}\n隊伍成員:\n **${teamMembers.join(
             "\n"
-          )}** : **${memberPosition}**`,
+          )}**`,
         });
       }
     } else {

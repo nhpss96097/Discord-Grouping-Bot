@@ -6,12 +6,14 @@ const {
   ComponentType,
 } = require("discord.js");
 
-const teams = {};
-const memberPosition = [];
+let teams = {};
+let memberPosition = [];
+let memberNumber = [];
 
 module.exports = {
   teams,
   memberPosition,
+  memberNumber,
   name: "create-team",
   description: "creating a team.",
   // devOnly: Boolean,
@@ -37,6 +39,13 @@ module.exports = {
 
   // 自定義需要的功能
   callback: async (client, interaction) => {
+    // 創新隊伍時重製參數
+    if (interaction.commandName === "create-team") {
+      // teams = {};
+      memberPosition = [];
+      memberNumber = [];
+    }
+
     const roles = [
       {
         id: "Dps",
@@ -66,6 +75,8 @@ module.exports = {
 
     teams[teamName] = inTeamMember;
 
+    let userTeamStatus = {}; // 追蹤使用者的隊伍狀態
+
     try {
       const row = new ActionRowBuilder();
 
@@ -86,9 +97,9 @@ module.exports = {
         components: [row],
       });
 
-      const collectorFilter = (i) => i.user.id === interaction.user.id;
-
-      const userName = interaction.user.globalName;
+      /* --------------------------------- 建立監聽事件 --------------------------------- */
+      // const collectorFilter = (i) => i.user.id === interaction.user.id;
+      const collectorFilter = (i) => i.isButton() && i.customId; // 排除非按鈕事件，並確保有 customId（按下的按鈕）
 
       // response.awaitMessageComponent
       // response.createMessageComponentCollector
@@ -96,26 +107,53 @@ module.exports = {
         const confirmation = await response.createMessageComponentCollector({
           filter: collectorFilter,
           componentType: ComponentType.Button,
-          time: 60_000, // 60 sec
+          // time: 60_000, // 60 sec
         });
 
         // console.log(confirmation.customId);
 
-        // 檢查是否在隊伍中
-        async function checkUserInTeam(user, i, position) {
+        /* -------------------------------- 檢查是否在隊伍中 -------------------------------- */
+        async function checkUserInTeam(user, i, position, memberIndex) {
           console.log("checkStart");
           console.log(inTeamMember);
 
-          const isUserInTeam = inTeamMember.includes(user); //使用者
-          const userPosition = memberPosition.includes(position); // 使用者的職位
-          if (isUserInTeam && userPosition) {
-            const index = inTeamMember.indexOf(user);
-            const positionIndex = memberPosition.indexOf(position);
-            if (index !== -1 || positionIndex !== -1) {
-              inTeamMember.splice(index, 1);
-              memberPosition.splice(positionIndex, 1);
+          // 檢查使用者與其職位
+          // const isUserInTeam = inTeamMember.includes(
+          //   `${memberIndex} ${user} (${position})`
+          // );
+
+          const userIsInTeam = inTeamMember.some((member) => {
+            const pattern = new RegExp(`^${memberIndex} ${user}`);
+            return pattern.test(member);
+          });
+
+          if (userIsInTeam) {
+            // 如果已經在隊伍中，則從隊伍中移除
+            // const index = inTeamMember.indexOf(
+            //   `${memberIndex} ${user} (${position})`
+            // );
+
+            // if (index !== -1) {
+            //   inTeamMember.splice(index, 1);
+            //   memberPosition.splice(index, 1);
+            //   memberNumber.splice(index, 1);
+            //   await i.reply({
+            //     // ephemeral: true,
+            //     content: `以退出${teamName}的隊伍`,
+            //   });
+            // }
+
+            const userIsInTeamIndex = inTeamMember.findIndex((member) => {
+              const pattern = new RegExp(`^${memberIndex} ${user}`);
+              return pattern.test(member);
+            });
+
+            if (userIsInTeamIndex !== -1) {
+              inTeamMember.splice(userIsInTeamIndex, 1);
+              memberPosition.splice(userIsInTeamIndex, 1);
+              memberNumber.splice(userIsInTeamIndex, 1);
               await i.reply({
-                ephemeral: true,
+                // ephemeral: true,
                 content: `以退出${teamName}的隊伍`,
               });
             }
@@ -126,43 +164,89 @@ module.exports = {
           console.log("checkEnd");
           console.log(inTeamMember);
 
-          return isUserInTeam;
+          // return isUserInTeam;
+          return userIsInTeam;
         }
 
-        // 確認是否超過設定的隊伍成員數量
+        /* ----------------------------- 確認是否超過設定的隊伍成員數量 ---------------------------- */
         async function checkTeamMember(i) {
           console.log("checkTeamMember");
           if (inTeamMember.length >= teamMember) {
             console.log("超過設定的成員數量");
             await i.reply({
-              ephemeral: true,
+              // ephemeral: true,
               content: `超過設定的隊伍成員數量，無法加入`,
             });
             return false;
           }
+
           return true;
         }
 
-        confirmation.on("collect", async (i) => {
-          const userInTeam = await checkUserInTeam(userName, i, i.customId);
+        /* --------------------------------- 取得成員編號 --------------------------------- */
+        function getNextMemberNumber() {
+          // 找最大的成員編號
+          const maxNumber = Math.max(...memberNumber);
+          // 空的設為 1，否則增加 1
+          return isFinite(maxNumber) ? maxNumber + 1 : 1;
+        }
 
-          if (!userInTeam) {
+        /* ---------------------------------- 監聽事件處理 ---------------------------------- */
+        confirmation.on("collect", async (i) => {
+          const userDisplayName = i.user.displayName;
+          // const userInTeam = await checkUserInTeam(
+          //   userDisplayName,
+          //   i,
+          //   i.customId,
+          //   memberNumber
+          // );
+
+          const userInTeam = userTeamStatus[i.user.id];
+          if (userInTeam) {
+            const userIndex = inTeamMember.findIndex((member) => {
+              member.startsWith(`${userInTeam.number} ${userDisplayName}`);
+            });
+
+            if (userInTeam !== -1) {
+              inTeamMember.splice(userIndex, 1);
+              memberPosition.splice(userIndex, 1);
+              memberNumber.splice(userIndex, 1);
+              userTeamStatus[i.user.id] = null;
+              await i.reply({
+                // ephemeral: true,
+                content: `${userDisplayName}以退出${teamName}的隊伍`,
+              });
+            }
+          } else if (!userInTeam) {
             if (checkTeamMember(i)) {
               switch (i.customId) {
                 case "Dps":
                 case "Tank":
                 case "Sup":
                 case "Healer":
-                  inTeamMember.push(userName);
-                  console.log(inTeamMember);
+                  // console.log(i.user);
                   memberPosition.push(i.customId);
+                  const memberNum = getNextMemberNumber();
+                  memberNumber.push(memberNum);
+                  const positionIndex = memberPosition.indexOf(i.customId);
+                  if (positionIndex !== -1) {
+                    inTeamMember.push(
+                      `${memberNum} ${userDisplayName} (${i.customId})`
+                    );
+                    userTeamStatus[i.user.id] = {
+                      position: i.customId,
+                      number: memberNum,
+                    };
+                    // console.log(inTeamMember);
+                  }
+
                   await i.reply({
-                    ephemeral: true,
+                    // ephemeral: true,
                     content: `以${
                       i.customId
-                    }的職位加入**${teamName}**的隊伍\n目前隊伍成員:\n **${inTeamMember.join(
+                    }的職位加入**${teamName}**的隊伍\n目前隊伍成員:\n**${inTeamMember.join(
                       "\n"
-                    )}**：**${i.customId}** \n`,
+                    )}**`,
                     components: [],
                   });
                   console.log("teams:");
@@ -178,8 +262,6 @@ module.exports = {
           components: [],
         });
       }
-
-      // process.exit();
     } catch (error) {
       console.log(`There was an error: ${error}`);
     }

@@ -39,13 +39,6 @@ module.exports = {
 
   // 自定義需要的功能
   callback: async (client, interaction) => {
-    // 創新隊伍時重製參數
-    if (interaction.commandName === "create-team") {
-      // teams = {};
-      memberPosition = [];
-      memberNumber = [];
-    }
-
     const roles = [
       {
         id: "Dps",
@@ -77,6 +70,21 @@ module.exports = {
 
     let userTeamStatus = {}; // 追蹤使用者的隊伍狀態
 
+    // 創新隊伍時重製參數
+    if (interaction.commandName === "create-team") {
+      // teams = {};
+
+      if (teamMember === 0) {
+        await interaction.reply({
+          content: `隊伍成員不能為 0 `,
+        });
+        return;
+      }
+
+      memberPosition = [];
+      memberNumber = [];
+    }
+
     try {
       const row = new ActionRowBuilder();
 
@@ -90,10 +98,7 @@ module.exports = {
       });
 
       const response = await interaction.reply({
-        content:
-          `隊伍名稱: ${teamName}\n組員數量: ${teamMember}` +
-          `\n目前隊伍成員: ${inTeamMember}` +
-          "\n**選擇欲加入的職位:**",
+        content: `隊伍名稱: ${teamName}\n組員數量: ${teamMember}\n**選擇欲加入的職位:**`,
         components: [row],
       });
 
@@ -174,7 +179,7 @@ module.exports = {
           if (inTeamMember.length >= teamMember) {
             console.log("超過設定的成員數量");
             await i.reply({
-              // ephemeral: true,
+              ephemeral: true,
               content: `超過設定的隊伍成員數量，無法加入`,
             });
             return false;
@@ -201,7 +206,7 @@ module.exports = {
           //   memberNumber
           // );
 
-          const userInTeam = userTeamStatus[i.user.id];
+          const userInTeam = userTeamStatus[i.user.id]; // 將使用者 id 資訊存入
           if (userInTeam) {
             const userIndex = inTeamMember.findIndex((member) => {
               member.startsWith(`${userInTeam.number} ${userDisplayName}`);
@@ -217,42 +222,41 @@ module.exports = {
                 content: `${userDisplayName}以退出${teamName}的隊伍`,
               });
             }
-          } else if (!userInTeam) {
-            if (checkTeamMember(i)) {
-              switch (i.customId) {
-                case "Dps":
-                case "Tank":
-                case "Sup":
-                case "Healer":
-                  // console.log(i.user);
-                  memberPosition.push(i.customId);
-                  const memberNum = getNextMemberNumber();
-                  memberNumber.push(memberNum);
-                  const positionIndex = memberPosition.indexOf(i.customId);
-                  if (positionIndex !== -1) {
-                    inTeamMember.push(
-                      `${memberNum} ${userDisplayName} (${i.customId})`
-                    );
-                    userTeamStatus[i.user.id] = {
-                      position: i.customId,
-                      number: memberNum,
-                    };
-                    // console.log(inTeamMember);
-                  }
+          } else if (!userInTeam && checkTeamMember(i)) {
+            switch (i.customId) {
+              case "Dps":
+              case "Tank":
+              case "Sup":
+              case "Healer":
+                // console.log(i.user);
+                memberPosition.push(i.customId);
+                const memberNum = getNextMemberNumber();
+                memberNumber.push(memberNum);
+                const positionIndex = memberPosition.indexOf(i.customId);
+                if (positionIndex !== -1) {
+                  inTeamMember.push(
+                    `${memberNum} ${userDisplayName} (${i.customId})`
+                  );
+                  userTeamStatus[i.user.id] = {
+                    position: i.customId,
+                    number: memberNum,
+                  };
+                  // console.log(inTeamMember);
+                }
 
-                  await i.reply({
-                    // ephemeral: true,
-                    content: `以${
-                      i.customId
-                    }的職位加入**${teamName}**的隊伍\n目前隊伍成員:\n**${inTeamMember.join(
-                      "\n"
-                    )}**`,
-                    components: [],
-                  });
-                  console.log("teams:");
-                  console.log(teams);
-                  return;
-              }
+                await i.reply({
+                  // ephemeral: true,
+                  content: `以${
+                    i.customId
+                  }的職位加入**${teamName}**的隊伍\n目前隊伍成員:\n**${inTeamMember.join(
+                    "\n"
+                  )}**`,
+                  components: [],
+                });
+                console.log("teams:");
+                console.log(teams);
+
+                return;
             }
           }
         });

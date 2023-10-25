@@ -58,11 +58,14 @@ module.exports = {
     }
   },
 
-  // deleted: true,
+  /* --------------------------------- command -------------------------------- */
   name: "ban",
   description: "bans a member from the server.",
   // devOnly: Boolean,
   // testOnly: Boolean,
+  // deleted: true,
+  testOnly: true,
+
   options: [
     {
       name: "target-user",

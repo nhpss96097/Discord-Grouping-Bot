@@ -58,11 +58,14 @@ module.exports = {
     }
   },
 
-  // deleted: true,
+  /* --------------------------------- command -------------------------------- */
   name: "kick",
   description: "kicks a member from the server.",
   // devOnly: Boolean,
   // testOnly: Boolean,
+  // deleted: true,
+  testOnly: true,
+
   options: [
     {
       name: "target-user",

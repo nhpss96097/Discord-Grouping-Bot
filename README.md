@@ -26,4 +26,5 @@ This robot has two commands.
 
    If you want the bot to run for 24 hours, you need to find the hosting website.
 
-# Discord Official Teaching - [Creating an app(bot)] (https://discord.com/developers/docs/getting-started#step-1-creating-an-app)
+# Discord Official Teaching
+  [ Creating an app(bot)]([url](https://discord.com/developers/docs/getting-started#step-1-creating-an-app)https://discord.com/developers/docs/getting-started#step-1-creating-an-app)

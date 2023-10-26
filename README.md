@@ -25,3 +25,5 @@ This robot has two commands.
 4. Use terminal and execution "nodemon index".
 
    If you want the bot to run for 24 hours, you need to find the hosting website.
+
+# Discord Official Teaching - [Creating an app(bot)] (https://discord.com/developers/docs/getting-started#step-1-creating-an-app)

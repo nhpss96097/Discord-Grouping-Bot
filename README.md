@@ -8,8 +8,8 @@ like this
 
 This robot has two commands.
 
-1. /create-team [teamName] [teamMember] => Use this to create your team.
-2. /check-team [teamName] => Use this to check the team you want to check.
+1. `/create-team [teamName] [teamMember]` => Use this to create your team.
+2. `/check-team [teamName]` => Use this to check the team you want to check.
 
 # How to use this bot
 
@@ -26,5 +26,7 @@ This robot has two commands.
 
    If you want the bot to run for 24 hours, you need to find the hosting website.
 
-# Discord Official Teaching
-  [ Creating an app(bot)]([url](https://discord.com/developers/docs/getting-started#step-1-creating-an-app)https://discord.com/developers/docs/getting-started#step-1-creating-an-app)
+If you don't know how to create a discord bot, you can consult the official discord documentation.
+
+Discord Official Documentation [Creating an app(bot)](https://discord.com/developers/docs/getting-started#step-1-creating-an-app)
+  

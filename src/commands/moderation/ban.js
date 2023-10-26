@@ -61,8 +61,7 @@ module.exports = {
   /* --------------------------------- command -------------------------------- */
   name: "ban",
   description: "bans a member from the server.",
-  // devOnly: Boolean,
-  // testOnly: Boolean,
+  devOnly: true,
   // deleted: true,
   testOnly: true,
 

@@ -1,4 +1,4 @@
-const { testServer, QueenCatServer } = require("../../../config.json");
+const { testServer } = require("../../../config.json");
 const areCommandsDifferent = require("../../utils/areCommandsDifferent");
 const getApplicationCommands = require("../../utils/getApplicationCommands");
 const getLocalCommands = require("../../utils/getLocalCommands");
@@ -7,8 +7,8 @@ module.exports = async (client) => {
   try {
     const localCommands = getLocalCommands();
     const applicationCommands = await getApplicationCommands(
-      client,
-      testServer && QueenCatServer
+      client
+      // testServer
     );
 
     for (const localCommand of localCommands) {

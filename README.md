@@ -22,7 +22,7 @@ This robot has two commands.
 
    ![圖片](https://github.com/nhpss96097/Discord-Grouping-Bot/assets/96778357/c7da5b9f-1aa5-4e87-84aa-cdb794a3a921)
 
-4. Use terminal and execution "nodemon index".
+4. Use terminal and execution `nodemon index`.
 
    If you want the bot to run for 24 hours, you need to find the hosting website.
 

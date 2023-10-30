@@ -246,7 +246,7 @@ module.exports = {
 
                 await i.reply({
                   // ephemeral: true,
-                  content: `以${
+                  content: `${userDisplayName}以${
                     i.customId
                   }的職位加入**${teamName}**的隊伍\n目前隊伍成員:\n**${inTeamMember.join(
                     "\n"

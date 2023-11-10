@@ -19,7 +19,7 @@ module.exports = {
   // devOnly: Boolean,
   // testOnly: true,
   // options: Object[],
-  // deleted: Boolean,
+  // deleted: true,
 
   options: [
     {

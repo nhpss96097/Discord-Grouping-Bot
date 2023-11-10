@@ -62,7 +62,7 @@ module.exports = {
   name: "ban",
   description: "bans a member from the server.",
   devOnly: true,
-  // deleted: true,
+  deleted: true,
   testOnly: true,
 
   options: [

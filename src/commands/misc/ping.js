@@ -4,7 +4,7 @@ module.exports = {
   // devOnly: Boolean,
   // testOnly: true,
   // options: Object[],
-  // deleted: Boolean,
+  deleted: true,
 
   // 自定義需要的功能
   callback: async (client, interaction) => {

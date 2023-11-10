@@ -39,6 +39,7 @@ module.exports = async (client) => {
           );
           continue;
         }
+
         await applicationCommands.create({
           name,
           description,
